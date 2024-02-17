@@ -1,0 +1,54 @@
+mql5
+//+------------------------------------------------------------------+
+//|                        Crypto Trend Pro                           |
+//|        Developer: Forex Robot Easy Team - forexroboteasy.com     |
+//+------------------------------------------------------------------+
+
+// Include necessary libraries
+#include <Trade\Trade.mqh>
+#include <MovingAverages\MovingAverages.mqh>
+
+// Define constants
+#define TRADE_VOLUME 0.01
+#define SLOW_MA_PERIOD 50
+#define FAST_MA_PERIOD 20
+
+// Instantiate trade object
+CTrade trade;
+
+//+------------------------------------------------------------------+
+//| Expert initialization function                                   |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+    // Set trade volume
+    trade.Volume(TRADE_VOLUME);
+
+    return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Expert tick function                                             |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+    // Calculate moving averages
+    double slowMA = iMA(_Symbol, 0, SLOW_MA_PERIOD, 0, MODE_SMA, PRICE_CLOSE, 0);
+    double fastMA = iMA(_Symbol, 0, FAST_MA_PERIOD, 0, MODE_SMA, PRICE_CLOSE, 0);
+
+    // Check for bullish trend
+    if (fastMA > slowMA)
+    {
+        // Open a long position
+        trade.Buy();
+        Comment('Bullish trend - Buying');
+    }
+    // Check for bearish trend
+    else if (fastMA < slowMA)
+    {
+        // Close any open positions
+        trade.CloseAll();
+        Comment('Bearish trend - Closing all positions');
+    }
+}
+
